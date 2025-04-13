@@ -407,8 +407,8 @@ const initMap = async () => {
   })
 
   mapInstance.value = new AMap.Map('container', {
-    zoom: 10,
-    center: [114.397428, 35.90923], // 调整到中国中心位置
+    zoom: 9,
+    center: [122.2030363, 29.9873344],
     pitch: 0,
     rotation: 0,
     viewMode: '3D',

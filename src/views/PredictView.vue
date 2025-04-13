@@ -66,21 +66,7 @@
                 alt="检测结果"
               />
             </div>
-            <div class="flex justify-between items-center">
-              <div class="text-sm text-gray-500">
-                <p>
-                  图片尺寸：<span>{{ originalSize }}</span>
-                </p>
-                <p>
-                  上传时间：<span>{{ uploadTime }}</span>
-                </p>
-                <p>
-                  检测完成时间：<span>{{ processTime }}</span>
-                </p>
-                <p>
-                  识别垃圾数量：<span>{{ detectedCount }}</span>
-                </p>
-              </div>
+            <div class="flex justify-center items-center">
               <button
                 class="bg-primary text-white px-4 py-2 rounded-button hover:bg-opacity-90 transition-all whitespace-nowrap"
                 @click="downloadResult"
@@ -213,14 +199,15 @@ const simulateProgressAndProcessing = (file) => {
         showResult.value = true
 
         // 根据文件名规则选择结果图片
-        const fileName = file.name;
-        const fileNameWithoutExt = fileName.substring(0, fileName.lastIndexOf('.'));
-        const matchesPattern = fileNameWithoutExt.startsWith('Scene_1') && fileNameWithoutExt.endsWith('_34');
+        const fileName = file.name
+        const fileNameWithoutExt = fileName.substring(0, fileName.lastIndexOf('.'))
+        const matchesPattern =
+          fileNameWithoutExt.startsWith('Scene_1') && fileNameWithoutExt.endsWith('_34')
 
         // 根据匹配结果设置不同的结果图片
-        resultImageUrl.value = matchesPattern ?
-          '/predict/Scene_1_34_viz.png' :
-          '/predict/Scene_71_8_viz.png';
+        resultImageUrl.value = matchesPattern
+          ? '/predict/Scene_1_34_viz.png'
+          : '/predict/Scene_71_8_viz.png'
 
         processTime.value = new Date().toLocaleString()
         detectedCount.value = 8
