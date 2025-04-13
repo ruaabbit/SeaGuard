@@ -99,7 +99,7 @@
                   <div class="text-sm text-gray-600">垃圾分布密度趋势</div>
                   <div class="flex gap-2">
                     <button
-                      class="w-6 h-6 flex items-center justify-center text-xs bg-secondary bg-opacity-10 text-secondary !rounded-button"
+                      class="w-6 h-6 flex items-center justify-center text-xs border border-secondary bg-opacity-10 text-secondary !rounded-button"
                     >
                       日
                     </button>
@@ -132,7 +132,7 @@
                   <div class="text-sm text-gray-600">垃圾类型分布</div>
                   <div class="flex gap-2">
                     <button
-                      class="px-2 py-1 text-xs bg-secondary bg-opacity-10 text-secondary !rounded-button"
+                      class="px-2 py-1 text-xs border border-secondary text-secondary !rounded-button"
                     >
                       数量
                     </button>
@@ -477,6 +477,6 @@ onBeforeUnmount(() => {
   border-color: theme('colors.secondary');
 }
 .\!rounded-button {
-  border-radius: theme('borderRadius.button') !important;
+  border-radius: 0.5rem !important; /* 使用具体值替代 theme 函数 */
 }
 </style>
