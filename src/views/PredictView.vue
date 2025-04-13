@@ -65,6 +65,11 @@
                 class="w-full h-full object-contain absolute top-0 left-0 opacity-60"
                 alt="检测结果"
               />
+              <img
+                src="/predict/legend_chinese.svg"
+                class="absolute top-4 right-4 w-24 h-auto bg-white/80 rounded shadow-sm"
+                alt="图例"
+              />
             </div>
             <div class="flex justify-center items-center">
               <button

@@ -18,12 +18,6 @@ import { RouterLink, RouterView } from 'vue-router'
             <RouterLink to="/predict" class="text-gray-600 hover:text-secondary whitespace-nowrap"
               >预测分析</RouterLink
             >
-            <RouterLink to="/history" class="text-gray-600 hover:text-secondary whitespace-nowrap"
-              >历史数据</RouterLink
-            >
-            <RouterLink to="/report" class="text-gray-600 hover:text-secondary whitespace-nowrap"
-              >数据报告</RouterLink
-            >
           </div>
           <div class="flex items-center gap-4">
             <button
