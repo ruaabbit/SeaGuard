@@ -19,35 +19,37 @@
                 </button>
               </div>
             </div>
-            <div class="map-container h-[480px] rounded-lg relative">
-              <div class="absolute bottom-4 left-4 bg-white p-4 rounded-lg shadow-lg">
-                <div class="flex items-center gap-4 mb-4">
-                  <button
-                    class="w-8 h-8 flex items-center justify-center bg-secondary text-white rounded-full"
-                  >
-                    <i class="fas fa-play"></i>
-                  </button>
-                  <div class="flex items-center gap-2">
-                    <span class="text-sm text-gray-600">2023-12-20</span>
-                    <input
-                      type="range"
-                      class="w-48 h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer slider-thumb"
-                    />
-                    <span class="text-sm text-gray-600">2023-12-27</span>
+            <div class="h-[480px] rounded-lg relative overflow-hidden">
+              <div id="container" class="absolute inset-0 w-full h-full">
+                <div class="absolute bottom-4 left-4 bg-white p-4 rounded-lg shadow-lg z-10">
+                  <div class="flex items-center gap-4 mb-4">
+                    <button
+                      class="w-8 h-8 flex items-center justify-center bg-secondary text-white rounded-full"
+                    >
+                      <i class="fas fa-play"></i>
+                    </button>
+                    <div class="flex items-center gap-2">
+                      <span class="text-sm text-gray-600">2025-04-01</span>
+                      <input
+                        type="range"
+                        class="w-48 h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer slider-thumb"
+                      />
+                      <span class="text-sm text-gray-600">2025-05-01</span>
+                    </div>
                   </div>
-                </div>
-                <div class="flex gap-4">
-                  <div class="flex items-center gap-2">
-                    <span class="w-3 h-3 rounded-full bg-red-500"></span>
-                    <span class="text-sm">高密度区域</span>
-                  </div>
-                  <div class="flex items-center gap-2">
-                    <span class="w-3 h-3 rounded-full bg-yellow-500"></span>
-                    <span class="text-sm">中密度区域</span>
-                  </div>
-                  <div class="flex items-center gap-2">
-                    <span class="w-3 h-3 rounded-full bg-green-500"></span>
-                    <span class="text-sm">低密度区域</span>
+                  <div class="flex gap-4">
+                    <div class="flex items-center gap-2">
+                      <span class="w-3 h-3 rounded-full bg-red-500"></span>
+                      <span class="text-sm">高密度区域</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                      <span class="w-3 h-3 rounded-full bg-yellow-500"></span>
+                      <span class="text-sm">中密度区域</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                      <span class="w-3 h-3 rounded-full bg-green-500"></span>
+                      <span class="text-sm">低密度区域</span>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -239,6 +241,10 @@
 <script setup>
 import { ref, onMounted, onBeforeUnmount, nextTick } from 'vue'
 import * as echarts from 'echarts'
+import AMapLoader from '@amap/amap-jsapi-loader'
+
+// 地图实例
+const mapInstance = ref(null)
 
 // Refs for chart containers
 const chart1Ref = ref(null)
@@ -389,8 +395,37 @@ const resizeCharts = () => {
   chart2Instance?.resize()
 }
 
+// 初始化地图
+const initMap = async () => {
+  window._AMapSecurityConfig = {
+    securityJsCode: import.meta.env.VITE_AMAP_SECURITY_JS_CODE,
+  }
+  const AMap = await AMapLoader.load({
+    key: import.meta.env.VITE_AMAP_KEY,
+    version: '2.0',
+    plugins: ['AMap.Scale', 'AMap.ToolBar'],
+  })
+
+  mapInstance.value = new AMap.Map('container', {
+    zoom: 10,
+    center: [114.397428, 35.90923], // 调整到中国中心位置
+    pitch: 0,
+    rotation: 0,
+    viewMode: '3D',
+    skyColor: '#1E90FF', // 天空颜色
+    features: ['bg', 'building', 'point'], // 只显示必要的图层
+    showBuildingBlock: true, // 显示3D建筑
+  })
+
+  // 添加控件
+  mapInstance.value.addControl(new AMap.Scale())
+  mapInstance.value.addControl(new AMap.ToolBar())
+}
+
 // Mount lifecycle hook
 onMounted(async () => {
+  // 初始化地图
+  await initMap()
   // Ensure DOM is ready before initializing charts
   await nextTick()
   initCharts()
@@ -405,16 +440,13 @@ onBeforeUnmount(() => {
   // Dispose ECharts instances
   chart1Instance?.dispose()
   chart2Instance?.dispose()
+  // 销毁地图实例
+  mapInstance.value?.destroy()
 })
 </script>
 
 <style scoped>
 /* Using Tailwind utility classes directly is preferred, but adding specific styles here if needed */
-.map-container {
-  background-image: url('https://ai-public.mastergo.com/gen_page/map_placeholder_1280x720.png');
-  background-position: center;
-  background-size: cover;
-}
 
 /* Custom slider thumb style */
 .slider-thumb::-webkit-slider-thumb {
@@ -454,5 +486,31 @@ onBeforeUnmount(() => {
 }
 .\!rounded-button {
   border-radius: 0.5rem !important; /* 使用具体值替代 theme 函数 */
+}
+</style>
+
+<style>
+/* 高德地图容器样式 */
+.amap-container {
+  width: 100%;
+  height: 100%;
+}
+
+/* 高德地图控件样式调整 */
+:deep(.amap-scale) {
+  left: 20px !important;
+  bottom: 100px !important;
+}
+
+:deep(.amap-toolbar) {
+  right: 20px !important;
+  top: 20px !important;
+}
+
+:deep(.amap-control) {
+  z-index: 5;
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: 4px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 </style>
