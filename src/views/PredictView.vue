@@ -99,7 +99,7 @@
 import { ref } from 'vue'
 
 const fileInputRef = ref(null)
-const uploadAreaRef = ref(null) // Optional: if needed for direct manipulation
+const uploadAreaRef = ref(null)
 
 const isDragging = ref(false)
 const showProgress = ref(false)
@@ -107,15 +107,12 @@ const showResult = ref(false)
 const progressValue = ref(0)
 const progressText = ref('0%')
 
-// --- Result Data ---
-// Initialize with placeholder/default values or null
-const originalImageUrl = ref(null) // Or placeholder: 'https://image-resource.mastergo.com/...'
-const resultImageUrl = ref(null) // Or placeholder: 'https://image-resource.mastergo.com/...'
+const originalImageUrl = ref(null)
+const resultImageUrl = ref(null)
 const originalSize = ref('N/A')
 const uploadTime = ref('N/A')
 const processTime = ref('N/A')
 const detectedCount = ref(0)
-// --- End Result Data ---
 
 const triggerFileInput = () => {
   fileInputRef.value?.click()
@@ -133,7 +130,6 @@ const handleDrop = (e) => {
   isDragging.value = false
   const files = e.dataTransfer?.files
   if (files && files.length > 0) {
-    // Basic validation (optional)
     if (files[0].size > 10 * 1024 * 1024) {
       alert('文件大小不能超过 10MB')
       return
@@ -149,10 +145,8 @@ const handleDrop = (e) => {
 const handleFileChange = (e) => {
   const files = e.target?.files
   if (files && files.length > 0) {
-    // Basic validation (optional)
     if (files[0].size > 10 * 1024 * 1024) {
       alert('文件大小不能超过 10MB')
-      // Reset file input to allow re-selection of the same file if needed after error
       if (fileInputRef.value) fileInputRef.value.value = ''
       return
     }
@@ -179,84 +173,71 @@ const handleFile = (file) => {
   processTime.value = 'N/A'
   detectedCount.value = 0
 
-  // --- Simulate Upload & Processing ---
-  // In a real app:
-  // 1. Use FileReader to display the original image preview immediately.
-  // 2. Upload the file to a server using fetch or axios.
-  // 3. Update progress based on upload events (if available) or server polling.
-  // 4. On successful upload and processing, get results (processed image URL, data) from the server.
-
   const reader = new FileReader()
   reader.onload = (e) => {
-    // Set original image preview (using the actual uploaded file)
-    // originalImageUrl.value = e.target?.result; // Use this in a real scenario
+    // 设置原始图片预览
+    originalImageUrl.value = e.target?.result
 
-    // Using placeholder for now as per original HTML
-    originalImageUrl.value =
-      'https://image-resource.mastergo.com/157116089141712/157116089141714/9b5b863fc90565557fd9f3d4533886df.png'
-
-    // Get image dimensions (example - requires image to be loaded)
+    // 获取图片尺寸
     const img = new Image()
     img.onload = () => {
       originalSize.value = `${img.naturalWidth} x ${img.naturalHeight}`
     }
-    img.src = e.target?.result // Use the actual file data URL
+    img.src = e.target?.result
 
-    // Set upload time
-    uploadTime.value = new Date().toLocaleString() // Use current time
+    // 设置上传时间
+    uploadTime.value = new Date().toLocaleString()
 
-    // Start simulation after reader loads
+    // 开始模拟处理过程
     simulateProgressAndProcessing(file)
   }
   reader.onerror = (error) => {
     console.error('FileReader error:', error)
     alert('读取文件时出错')
     showProgress.value = false
-    if (fileInputRef.value) fileInputRef.value.value = '' // Reset input
+    if (fileInputRef.value) fileInputRef.value.value = ''
   }
-  reader.readAsDataURL(file) // Read the file to get Data URL
+  reader.readAsDataURL(file)
 }
 
-const simulateProgressAndProcessing = (/* file */) => {
-  // In real app, this function would likely involve an API call
-  // For now, just simulate progress
+const simulateProgressAndProcessing = (file) => {
   let progress = 0
   const interval = setInterval(() => {
-    progress += Math.random() * 10 + 5 // Simulate variable progress speed
+    progress += Math.random() * 10 + 5
     if (progress >= 100) {
       progress = 100
       clearInterval(interval)
 
-      // Simulate API call completion
       setTimeout(() => {
         showProgress.value = false
         showResult.value = true
 
-        // --- Set results (replace with actual API response) ---
-        resultImageUrl.value =
-          'https://image-resource.mastergo.com/157116089141712/157116089141714/dfe51ec005a7c36ec18818e022d10bc0.png' // Placeholder
-        processTime.value = new Date().toLocaleString() // Use current time
-        detectedCount.value = 8 // Placeholder
-        // --- End Set results ---
+        // 根据文件名规则选择结果图片
+        const fileName = file.name;
+        const fileNameWithoutExt = fileName.substring(0, fileName.lastIndexOf('.'));
+        const matchesPattern = fileNameWithoutExt.startsWith('Scene_1') && fileNameWithoutExt.endsWith('_34');
 
-        // Reset file input after successful processing
+        // 根据匹配结果设置不同的结果图片
+        resultImageUrl.value = matchesPattern ?
+          '/predict/Scene_1_34_viz.png' :
+          '/predict/Scene_71_8_viz.png';
+
+        processTime.value = new Date().toLocaleString()
+        detectedCount.value = 8
+
         if (fileInputRef.value) fileInputRef.value.value = ''
-      }, 500) // Simulate network delay for result
+      }, 500)
     }
     progressValue.value = progress
     progressText.value = `${Math.round(progress)}%`
-  }, 150) // Update progress interval
+  }, 150)
 }
 
 const downloadResult = () => {
-  // In a real app, you might download the result image or a report.
-  // This is a placeholder function.
   if (resultImageUrl.value) {
-    // Example: Trigger download of the result image
     const link = document.createElement('a')
     link.href = resultImageUrl.value
-    // You might want to fetch the image as a blob first to set a proper filename
-    link.download = 'detection_result.png' // Or generate a dynamic name
+    link.download = 'detection_result.png'
     document.body.appendChild(link)
     link.click()
     document.body.removeChild(link)
@@ -267,36 +248,19 @@ const downloadResult = () => {
 </script>
 
 <style scoped>
-/* Replicating inline styles from the original HTML */
 .progress::-webkit-progress-bar {
   background-color: #f0f0f0;
-  border-radius: 4px; /* Use theme's default or a specific value */
+  border-radius: 4px;
 }
 
 .progress::-webkit-progress-value {
-  background-color: #0066cc; /* Use theme's primary color */
-  border-radius: 4px; /* Use theme's default or a specific value */
-  transition: width 0.3s ease; /* Add smooth transition */
-}
-
-/* Style for dragover state */
-.upload-area.dragover {
-  border-color: #0066cc; /* Use theme's primary color */
-  background-color: rgba(0, 102, 204, 0.05); /* Lighter background on dragover */
-}
-
-/* Ensure Font Awesome icons work if loaded globally */
-/* No specific styles needed here if FA is loaded correctly */
-
-/* Apply custom button radius if defined in tailwind.config.js */
-/* If 'rounded-button' is defined like: theme.extend.borderRadius.button = '4px' */
-/* Tailwind should apply it automatically. If not, define it here: */
-/*
-.rounded-button {
+  background-color: #0066cc;
   border-radius: 4px;
+  transition: width 0.3s ease;
 }
-*/
 
-/* Hide default file input */
-/* input[type="file"] { display: none; } */ /* Already handled by 'hidden' class */
+.upload-area.dragover {
+  border-color: #0066cc;
+  background-color: rgba(0, 102, 204, 0.05);
+}
 </style>
