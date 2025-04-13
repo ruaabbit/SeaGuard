@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>海洋垃圾检测</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+theme: {
+extend: {
+colors: {
+primary: '#0066CC',
+secondary: '#00A3FF'
+},
+borderRadius: {
+'none': '0px',
+'sm': '2px',
+DEFAULT: '4px',
+'md': '8px',
+'lg': '12px',
+'xl': '16px',
+'2xl': '20px',
+'3xl': '24px',
+'full': '9999px',
+'button': '4px'
+}
+}
+}
+}
+</script>
+<style>
+input[type="file"] {
+display: none;
+}
+.progress::-webkit-progress-bar {
+background-color: #f0f0f0;
+border-radius: 4px;
+}
+.progress::-webkit-progress-value {
+background-color: #0066CC;
+border-radius: 4px;
+}
+.upload-area.dragover {
+border-color: #0066CC;
+background-color: rgba(0, 102, 204, 0.1);
+}
+</style>
+</head>
+<body class="min-h-[1024px] bg-gray-50">
+<div class="max-w-[1440px] mx-auto px-8 py-12">
+<div class="text-center mb-12">
+<h1 class="text-4xl font-bold text-gray-900 mb-4">海洋垃圾智能检测系统</h1>
+<p class="text-lg text-gray-600">上传图片，快速识别海洋垃圾</p>
+</div>
+<div class="max-w-3xl mx-auto mb-16">
+<div id="uploadArea" class="upload-area border-2 border-dashed border-gray-300 rounded-lg p-12 text-center bg-white cursor-pointer transition-all hover:border-primary">
+<i class="fas fa-cloud-upload-alt text-5xl text-gray-400 mb-4"></i>
+<h3 class="text-xl font-medium text-gray-700 mb-2">拖拽文件到这里或点击上传</h3>
+<p class="text-gray-500 mb-4">支持 jpg、png 格式，单个文件大小不超过 10MB</p>
+<button class="bg-primary text-white px-6 py-2 !rounded-button hover:bg-opacity-90 transition-all whitespace-nowrap">
+<i class="fas fa-plus mr-2"></i>选择文件
+</button>
+<input type="file" id="fileInput" accept=".jpg,.png">
+</div>
+<div id="progressArea" class="mt-8 block">
+<div class="flex items-center mb-2">
+<span class="text-sm text-gray-600 mr-4">处理中...</span>
+<span id="progressText" class="text-sm text-primary">100%</span>
+</div>
+<progress id="progressBar" class="progress w-full h-2" value="100" max="100"></progress>
+</div>
+</div>
+<div id="resultArea" class="block">
+<div class="max-w-3xl mx-auto mb-8">
+<div class="bg-white p-6 rounded-lg shadow-sm">
+<h3 class="text-lg font-medium text-gray-800 mb-4">检测结果</h3>
+<div class="aspect-video bg-gray-100 rounded-lg overflow-hidden mb-4 relative">
+<img id="originalImage" class="w-full h-full object-contain absolute top-0 left-0" src="https://image-resource.mastergo.com/157116089141712/157116089141714/9b5b863fc90565557fd9f3d4533886df.png" alt="原始图片">
+<img id="resultImage" class="w-full h-full object-contain absolute top-0 left-0 opacity-60" src="https://image-resource.mastergo.com/157116089141712/157116089141714/dfe51ec005a7c36ec18818e022d10bc0.png" alt="检测结果">
+</div>
+<div class="flex justify-between items-center">
+<div class="text-sm text-gray-500">
+<p>图片尺寸：<span id="originalSize">1920 x 1080</span></p>
+<p>上传时间：<span id="uploadTime">2024-01-18 15:30:22</span></p>
+<p>检测完成时间：<span id="processTime">2024-01-18 15:30:25</span></p>
+<p>识别垃圾数量：<span id="detectedCount">8</span></p>
+</div>
+<button class="bg-primary text-white px-4 py-2 !rounded-button hover:bg-opacity-90 transition-all whitespace-nowrap">
+<i class="fas fa-download mr-2"></i>下载结果
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<script>
+const uploadArea = document.getElementById('uploadArea');
+const fileInput = document.getElementById('fileInput');
+const progressArea = document.getElementById('progressArea');
+const progressBar = document.getElementById('progressBar');
+const progressText = document.getElementById('progressText');
+const resultArea = document.getElementById('resultArea');
+uploadArea.addEventListener('click', () => fileInput.click());
+uploadArea.addEventListener('dragover', (e) => {
+e.preventDefault();
+uploadArea.classList.add('dragover');
+});
+uploadArea.addEventListener('dragleave', () => {
+uploadArea.classList.remove('dragover');
+});
+uploadArea.addEventListener('drop', (e) => {
+e.preventDefault();
+uploadArea.classList.remove('dragover');
+const files = e.dataTransfer.files;
+if (files.length) handleFile(files[0]);
+});
+fileInput.addEventListener('change', (e) => {
+if (e.target.files.length) handleFile(e.target.files[0]);
+});
+function handleFile(file) {
+progressArea.classList.remove('hidden');
+resultArea.classList.add('hidden');
+simulateProgress();
+const reader = new FileReader();
+reader.onload = (e) => {
+document.getElementById('originalImage').src = "https://image-resource.mastergo.com/157116089141712/157116089141714/9b5b863fc90565557fd9f3d4533886df.png";
+document.getElementById('originalSize').textContent = "1920 x 1080";
+document.getElementById('uploadTime').textContent = "2024-01-18 15:30:22";
+};
+reader.readAsDataURL(file);
+}
+function simulateProgress() {
+let progress = 0;
+const interval = setInterval(() => {
+progress += Math.random() * 10;
+if (progress >= 100) {
+progress = 100;
+clearInterval(interval);
+setTimeout(() => {
+progressArea.classList.add('hidden');
+resultArea.classList.remove('hidden');
+document.getElementById('resultImage').src = "https://image-resource.mastergo.com/157116089141712/157116089141714/dfe51ec005a7c36ec18818e022d10bc0.png";
+document.getElementById('processTime').textContent = "2024-01-18 15:30:25";
+document.getElementById('detectedCount').textContent = "8";
+}, 500);
+}
+progressBar.value = progress;
+progressText.textContent = `${Math.round(progress)}%`;
+}, 200);
+}
+</script>
+</body>
+</html>
