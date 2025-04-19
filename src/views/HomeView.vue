@@ -181,11 +181,13 @@
             <div class="space-y-4">
               <button
                 class="w-full bg-secondary text-white py-3 !rounded-button hover:bg-opacity-90 whitespace-nowrap"
+                @click="openAdmin"
               >
-                <i class="fas fa-users mr-2"></i>参与志愿行动
+                <i class="fas fa-users mr-2"> </i>参与志愿行动
               </button>
               <button
                 class="w-full border border-secondary text-secondary py-3 !rounded-button hover:bg-gray-50 whitespace-nowrap"
+                @click="openAdmin"
               >
                 <i class="fas fa-file-download mr-2"></i>下载详细报告
               </button>
@@ -242,6 +244,10 @@
 import { ref, onMounted, onBeforeUnmount, nextTick } from 'vue'
 import * as echarts from 'echarts'
 import AMapLoader from '@amap/amap-jsapi-loader'
+
+const openAdmin = () => {
+  window.open('https://seaguard-admin.ruabbit.vip/admin', '_blank')
+}
 
 // 地图实例
 const mapInstance = ref(null)

@@ -1,5 +1,9 @@
 <script setup>
 import { RouterLink, RouterView } from 'vue-router'
+
+const openAdmin = () => {
+  window.open('https://seaguard-admin.ruabbit.vip/admin', '_blank')
+}
 </script>
 
 <template>
@@ -18,9 +22,16 @@ import { RouterLink, RouterView } from 'vue-router'
             <RouterLink to="/predict" class="text-gray-600 hover:text-secondary whitespace-nowrap"
               >预测分析</RouterLink
             >
+            <a
+              href="http://127.0.0.1:7860/"
+              target="_blank"
+              class="text-gray-600 hover:text-secondary whitespace-nowrap"
+              >目标检测</a
+            >
           </div>
           <div class="flex items-center gap-4">
             <button
+              @click="openAdmin"
               class="bg-primary text-white px-4 py-2 !rounded-button hover:bg-opacity-90 whitespace-nowrap"
             >
               <i class="fas fa-user-plus mr-2"></i>加入行动
